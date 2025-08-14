@@ -51,6 +51,6 @@ if __name__ == "__main__":
     sol = Solution()
     nums = [2, 7, 11, 15]
     target = 9
-    print("Brute Force:", sol.twoSum_bruteforce(nums, target))  # Output: [0, 1]
-    print("Hash Map:", sol.twoSum_hashmap(nums, target))        # Output: [0, 1]
+    print("Brute Force:", sol.twoSum_bruteforce(nums, target))  # Output: [0, 1] or [1, 0]
+    print("Hash Map:", sol.twoSum_hashmap(nums, target))        # Output: [0, 1] or [1,0]
 
