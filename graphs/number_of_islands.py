@@ -15,36 +15,31 @@ Approach:
 4. Repeat until entire grid is scanned
 5. Return the count of islands
 
+DFS/BFS:
 Time Complexity: O(m * n)
 Space Complexity: O(m * n) in worst case recursion stack
 """
 
 from typing import List
+from collections import deque
+import copy
 
 class Solution:
-    def numIslands(self, grid: List[List[str]]) -> int:
+    # ---------- DFS ----------
+    def numIslands_dfs(self, grid: List[List[str]]) -> int:
         if not grid:
             return 0
 
         m, n = len(grid), len(grid[0])
 
-        def dfs(r: int, c: int):
-            # Base cases: out of bounds or water
-            if (
-                r < 0 or c < 0 or
-                r >= m or c >= n or
-                grid[r][c] != '1'
-            ):
+        def dfs(r: int, c: int) -> None:
+            if r < 0 or c < 0 or r >= m or c >= n or grid[r][c] != '1':
                 return
-            
-            # Mark as visited
-            grid[r][c] = '0'
-
-            # Explore neighbors
-            dfs(r-1, c)  # up
-            dfs(r+1, c)  # down
-            dfs(r, c-1)  # left
-            dfs(r, c+1)  # right
+            grid[r][c] = '0'  # mark visited
+            dfs(r - 1, c)
+            dfs(r + 1, c)
+            dfs(r, c - 1)
+            dfs(r, c + 1)
 
         count = 0
         for r in range(m):
@@ -54,9 +49,38 @@ class Solution:
                     count += 1
         return count
 
+    # ---------- BFS ----------
+    def numIslands_bfs(self, grid: List[List[str]]) -> int:
+        if not grid:
+            return 0
+
+        m, n = len(grid), len(grid[0])
+        q = deque()
+
+        def push_if_land(r: int, c: int) -> None:
+            if 0 <= r < m and 0 <= c < n and grid[r][c] == '1':
+                grid[r][c] = '0'  # mark visited when enqueuing
+                q.append((r, c))
+
+        count = 0
+        for r in range(m):
+            for c in range(n):
+                if grid[r][c] == '1':
+                    count += 1
+                    push_if_land(r, c)
+                    # consume the whole island
+                    while q:
+                        cr, cc = q.popleft()
+                        push_if_land(cr - 1, cc)
+                        push_if_land(cr + 1, cc)
+                        push_if_land(cr, cc - 1)
+                        push_if_land(cr, cc + 1)
+        return count
+
 
 if __name__ == "__main__":
     sol = Solution()
+
     grid1 = [
         ["1","1","1","1","0"],
         ["1","1","0","1","0"],
@@ -70,6 +94,8 @@ if __name__ == "__main__":
         ["0","0","0","1","1"]
     ]
 
-    print(sol.numIslands(grid1))  # Output: 1
-    print(sol.numIslands(grid2))  # Output: 3
-
+    # Use copies so each approach sees original input
+    print("DFS:", sol.numIslands_dfs(copy.deepcopy(grid1)))  # 1
+    print("DFS:", sol.numIslands_dfs(copy.deepcopy(grid2)))  # 3
+    print("BFS:", sol.numIslands_bfs(copy.deepcopy(grid1)))  # 1
+    print("BFS:", sol.numIslands_bfs(copy.deepcopy(grid2)))  # 3
